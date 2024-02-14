@@ -11,6 +11,10 @@
 #include <winlnxdefs.h>
 #endif
 
+#if defined(COR64)
+extern void * glContextPtr;
+#endif
+
 #ifdef EGL
 #include <GL/glcorearb.h>
 #include <EGL/egl.h>

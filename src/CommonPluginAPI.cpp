@@ -8,10 +8,10 @@
 
 extern "C" {
 
-EXPORT BOOL CALL InitiateGFX (GFX_INFO Gfx_Info)
-{
-	return api().InitiateGFX(Gfx_Info);
-}
+// EXPORT BOOL CALL InitiateGFX (GFX_INFO Gfx_Info)
+// {
+// 	return api().InitiateGFX(Gfx_Info);
+// }
 
 EXPORT void CALL MoveScreen (int xpos, int ypos)
 {

@@ -3,6 +3,8 @@
 
 #include "Types.h"
 
+#define DEBUG_DUMP
+
 #define DEBUG_LOW		0x01
 #define DEBUG_NORMAL	0x02
 #define DEBUG_DETAIL	0x04

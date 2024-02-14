@@ -10,6 +10,7 @@
 #include "wst.h"
 #include "DebugDump.h"
 #include "DisplayWindow.h"
+#include <iostream>
 
 #ifdef DEBUG_DUMP
 
@@ -67,8 +68,9 @@ std::unique_ptr<BufferedLog> g_log;
 
 void DebugMsg(u32 _mode, const char * _format, ...)
 {
-	if (!g_log || !g_log->needPrint(_mode))
-		return;
+    return;
+	// if (!g_log || !g_log->needPrint(_mode))
+		// return;
 
 	char buf[1024];
 	char* text = buf;
@@ -86,7 +88,8 @@ void DebugMsg(u32 _mode, const char * _format, ...)
 	vsprintf(text, _format, va);
 	va_end(va);
 
-	g_log->print(buf);
+    std::wcout << L"DD: " << buf << std::endl;
+	// g_log->print(buf);
 }
 
 void StartDump(u32 _mode)

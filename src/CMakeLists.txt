@@ -9,6 +9,7 @@ option(MESA "Set to ON to disable Raspberry Pi autodetection" ${MESA})
 option(VERO4K "Set to ON if targeting a Vero4k" ${VERO4K})
 option(ANDROID "Set to ON if targeting an Android device" ${ANDROID})
 option(GL_PROFILE "Set to ON to turn on GL profiling" ${GL_PROFILE})
+option(COR64 "Set to ON to turn on COR64 support" ${COR64})
 
 # run script to generate Revision.h
 set(PATH_REVISION "${CMAKE_CURRENT_BINARY_DIR}/inc/Revision.h")
@@ -253,22 +254,47 @@ if(MUPENPLUSAPI)
   endif()
 else(MUPENPLUSAPI)
   if(UNIX)
-    message(FATAL_ERROR "UNIX build requires MUPENPLUSAPI!")
-  endif(UNIX)
-  include_directories( . inc )
-  set(GLideN64_SOURCES_WIN
-	ZilmarPluginAPI.cpp
-	GLideNUI/Config_GLideNUI.cpp
-	windows/CommonAPIImpl_windows.cpp
-	windows/GLideN64_windows.cpp
-	windows/MemoryStatus_windows.cpp
-	windows/ZilmarAPIImpl_windows.cpp
-  windows/ScreenShot.cpp
-	Graphics/OpenGLContext/windows/windows_DisplayWindow.cpp
-  Graphics/OpenGLContext/windows/WindowsWGL.cpp
-  ${GLideNUI_SOURCES}
+      add_definitions(
+    		-DTXFILTER_LIB
+      )
+      include_directories( . inc )
+      set(GLideN64_SOURCES_UNIX
+    	cor64/ZilmarAPIImpl.cpp
+    	cor64/CommonAPIImpl.cpp
+    	mupenplus/MemoryStatus_mupenplus.cpp
+    	Graphics/OpenGLContext/mupen64plus/mupen64plus_DisplayWindow.cpp
+      )
+
+      if(MUPENPLUSAPI_GLIDENUI)
+          add_definitions(-DM64P_GLIDENUI)
+          list(APPEND GLideN64_SOURCES_UNIX
+            ${GLideNUI_SOURCES}
+          )
+      else()
+          list(APPEND GLideN64_SOURCES_UNIX
+            mupenplus/Config_mupenplus.cpp
+          )
+      endif()
+
+      set(GLideN64_SOURCES_WIN ${GLideN64_SOURCES_UNIX}
+      )
+       set(GLideN64_DLL_NAME cor64-GLideN64)
+  else(UNIX)
+      include_directories( . inc )
+      set(GLideN64_SOURCES_WIN
+    	ZilmarPluginAPI.cpp
+    	GLideNUI/Config_GLideNUI.cpp
+    	windows/CommonAPIImpl_windows.cpp
+    	windows/GLideN64_windows.cpp
+    	windows/MemoryStatus_windows.cpp
+    	windows/ZilmarAPIImpl_windows.cpp
+      windows/ScreenShot.cpp
+    	Graphics/OpenGLContext/windows/windows_DisplayWindow.cpp
+      Graphics/OpenGLContext/windows/WindowsWGL.cpp
+      ${GLideNUI_SOURCES}
   )
   set(GLideN64_DLL_NAME GLideN64)
+  endif()
 endif(MUPENPLUSAPI)
 
 add_subdirectory( osal )
@@ -504,6 +530,13 @@ else(EGL)
   	message(ERROR " OPENGL not found!")
   endif(NOT OPENGL_FOUND)
 endif(EGL)
+
+if(COR64)
+    add_definitions(
+            -DCOR64 -DMUPENPLUSAPI
+    )
+endif(COR64)
+
 
 if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU" OR "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
   #check for compiler version

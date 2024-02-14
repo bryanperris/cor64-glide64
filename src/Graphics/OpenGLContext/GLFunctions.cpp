@@ -17,6 +17,11 @@
 #define GL_GET_PROC_ADR(proc_type, proc_name) ptr##proc_name = (proc_type) glGetProcAddress("gl"#proc_name)
 #define GL_GET_PROC_ADR_EGL(proc_type, proc_name) ptr##proc_name = (proc_type) glGetProcAddress("egl"#proc_name)
 
+#elif defined(COR64)
+
+#include <m64p_vidext.h>
+#define GL_GET_PROC_ADR(proc_type, proc_name) ptr##proc_name = (proc_type) CoreVideo_GL_GetProcAddress("gl"#proc_name)
+
 #elif defined(OS_LINUX)
 
 #include <X11/Xutil.h>

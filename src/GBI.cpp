@@ -1,6 +1,7 @@
 #include <algorithm>
 #include <assert.h>
 #include <cctype>
+#include <iostream>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -364,8 +365,10 @@ void GBIInfo::loadMicrocode(u32 uc_start, u32 uc_dstart, u16 uc_dsize)
 	current.dataSize = uc_dsize;
 	current.type = NONE;
 
+    u8 * RDRAMPtr = &RDRAM[uc_start & 0x1FFFFFFF];
+
 	// See if we can identify it by CRC
-	const u32 uc_crc = CRC_Calculate_Strict( 0xFFFFFFFF, &RDRAM[uc_start & 0x1FFFFFFF], 4096 );
+	const u32 uc_crc = CRC_Calculate_Strict( 0xFFFFFFFF, RDRAMPtr, 4096 );
 	SpecialMicrocodeInfo infoToSearch;
 	infoToSearch.crc = uc_crc;
 	auto it = std::lower_bound(specialMicrocodes.begin(), specialMicrocodes.end(), infoToSearch,

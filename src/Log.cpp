@@ -42,7 +42,6 @@ std::wstring getFormattedTime()
 }
 
 void LogDebug(const char* _fileName, int _line, u16 _type, const char* _format, ...) {
-
 	static const char* logLevelText[] = {
 			"NONE",
 			"ERROR",
@@ -55,35 +54,38 @@ void LogDebug(const char* _fileName, int _line, u16 _type, const char* _format, 
 	if (_type > LOG_LEVEL)
 		return;
 
+    // Disable log
+    // return;
+
 	std::wstring formattedTimeOfLog = getFormattedTime();
 
 	std::unique_lock<std::mutex> lock(g_logMutex);
 
-	if (!fileOutput.is_open()) {
-		class SetLocale
-		{
-		public:
-			SetLocale() : m_locale(setlocale(LC_CTYPE, NULL)) { setlocale(LC_CTYPE, ""); }
-			~SetLocale() { setlocale(LC_CTYPE, m_locale.c_str()); }
-		private:
-			std::string m_locale;
-		} setLocale;
+	// if (!fileOutput.is_open()) {
+	// 	class SetLocale
+	// 	{
+	// 	public:
+	// 		SetLocale() : m_locale(setlocale(LC_CTYPE, NULL)) { setlocale(LC_CTYPE, ""); }
+	// 		~SetLocale() { setlocale(LC_CTYPE, m_locale.c_str()); }
+	// 	private:
+	// 		std::string m_locale;
+	// 	} setLocale;
 
-		wchar_t logPath[PLUGIN_PATH_SIZE + 16];
-		api().GetUserDataPath(logPath);
+	// 	wchar_t logPath[PLUGIN_PATH_SIZE + 16];
+	// 	api().GetUserDataPath(logPath);
 
-		// Convert wchar string to multibyte string
-		// Use large enough buffer to hold multibyte conversion of wchar string
-		char logPathChar[PLUGIN_PATH_SIZE * 4];
-		std::wcstombs(logPathChar, logPath, sizeof(logPathChar));
+	// 	// Convert wchar string to multibyte string
+	// 	// Use large enough buffer to hold multibyte conversion of wchar string
+	// 	char logPathChar[PLUGIN_PATH_SIZE * 4];
+	// 	std::wcstombs(logPathChar, logPath, sizeof(logPathChar));
 
-		std::stringstream logPathStream;
-		logPathStream << logPathChar << "/" << "gliden64.log";
-		fileOutput.open(logPathStream.str().c_str(), std::wofstream::out | std::wofstream::app);
-	}
+	// 	std::stringstream logPathStream;
+	// 	logPathStream << logPathChar << "/" << "gliden64.log";
+	// 	fileOutput.open(logPathStream.str().c_str(), std::wofstream::out | std::wofstream::app);
+	// }
 
-	if (!fileOutput.is_open())
-		return;
+	// if (!fileOutput.is_open())
+	// 	return;
 
 	// initialize use of the variable argument array
 	va_list vaArgs;
@@ -106,11 +108,16 @@ void LogDebug(const char* _fileName, int _line, u16 _type, const char* _format, 
 	std::vsnprintf(zc.data(), zc.size(), _format, vaArgs);
 	va_end(vaArgs);
 
+
+
 	std::time_t t = std::time(nullptr);
-	std::wstringstream lcFormatString;
-	lcFormatString << formattedTimeOfLog << "," << _fileName << ":" << _line << "," << logLevelText[_type] << ", \"" << zc.data() << "\"" << std::endl;
-	fileOutput << lcFormatString.str();
-	fileOutput.flush();
+	// std::wstringstream lcFormatString;
+	// lcFormatString << formattedTimeOfLog << "," << _fileName << ":" << _line << "," << logLevelText[_type] << ", \"" << zc.data() << "\"" << std::endl;
+
+    std::wcout << "LOG: " << formattedTimeOfLog << "," << _fileName << ":" << _line << "," << logLevelText[_type] << ", \"" << zc.data() << "\"" << std::endl;
+
+	// fileOutput << lcFormatString.str();
+	// fileOutput.flush();
 }
 
 #if defined(OS_WINDOWS) && !defined(MINGW)
